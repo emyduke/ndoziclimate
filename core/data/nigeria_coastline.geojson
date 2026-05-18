@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "Nigeria Coastline Simplified"},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [2.70, 6.45],
+          [3.10, 6.35],
+          [3.45, 6.20],
+          [4.20, 5.80],
+          [5.20, 5.45],
+          [6.10, 4.95],
+          [6.95, 4.55],
+          [7.40, 4.35],
+          [8.10, 4.45],
+          [8.65, 4.60],
+          [8.95, 4.75]
+        ]
+      }
+    }
+  ]
+}
