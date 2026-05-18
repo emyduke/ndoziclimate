@@ -1,0 +1,47 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block subject %}Ndozi Climate{% endblock %}</title>
+<style>
+  body{margin:0;padding:0;background:#F7F0E4;font-family:'helvetica neue',helvetica,arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  .email-wrap{max-width:600px;margin:0 auto;padding:40px 20px;}
+  .email-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(24,16,10,0.08);}
+  .email-header{background:#18100A;padding:32px 40px;text-align:center;}
+  .email-header-logo{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
+  .email-header-logo span{color:#E08A18;}
+  .email-header-tagline{font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;letter-spacing:1.5px;text-transform:uppercase;}
+  .email-body{padding:36px 40px;}
+  .email-footer{background:#0E0804;padding:20px 40px;text-align:center;}
+  .email-footer p{font-size:10px;color:rgba(255,255,255,0.2);line-height:1.7;margin:0;}
+  .email-footer a{color:rgba(255,255,255,0.35);text-decoration:none;}
+  h1{font-size:22px;font-weight:700;color:#18100A;margin:0 0 8px;line-height:1.2;}
+  p{font-size:14px;color:#6B4E28;line-height:1.7;margin:0 0 14px;}
+  .btn-primary{display:inline-block;background:#C8780A;color:#fff !important;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;margin:6px 0 16px;}
+  .divider{height:1px;background:#EAD8B8;margin:20px 0;}
+  .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#C8780A;margin-bottom:8px;}
+  @media(max-width:600px){.email-body{padding:24px 20px;}.email-header,.email-footer{padding:20px;}}
+</style>
+</head>
+<body>
+<div class="email-wrap">
+  <div class="email-card">
+    <div class="email-header">
+      <div class="email-header-logo">Ndozi <span>Climate</span></div>
+      <div class="email-header-tagline">Know Before You Buy</div>
+    </div>
+    <div class="email-body">
+      {% block body %}{% endblock %}
+    </div>
+    <div class="email-footer">
+      <p>
+        © 2025 Ndozi Climate · <a href="{{ site_url }}">ndoziclimate.org</a><br>
+        You received this because you have an account on Ndozi Climate.<br>
+        <a href="{{ site_url }}">Manage preferences</a>
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

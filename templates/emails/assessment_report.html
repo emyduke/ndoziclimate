@@ -1,0 +1,72 @@
+{% extends "emails/base_email.html" %}
+{% block subject %}Your Climate Risk Report is Ready — {{ result.state }}{% endblock %}
+
+{% block body %}
+<div class="tag">Assessment Report</div>
+<h1>
+  Your report is ready —
+  <span style="color:{% if result.grade == 'A' %}#22A06B{% elif result.grade == 'B' %}#D4A820{% elif result.grade == 'C' %}#C8780A{% else %}#DC3C3C{% endif %}">
+    Grade {{ result.grade }}
+  </span>
+</h1>
+<div class="divider"></div>
+<p>Hi {{ user.first_name|default:user.username }},</p>
+<p>Your climate risk assessment for <strong>{{ result.state }}</strong> has been completed. Here's a summary of the results:</p>
+
+<!-- Grade Card -->
+<div style="background:#18100A;border-radius:12px;padding:24px;margin:20px 0;text-align:center;">
+  <div style="font-size:72px;font-weight:700;font-family:Georgia,serif;color:{% if result.grade == 'A' %}#22A06B{% elif result.grade == 'B' %}#F5C830{% elif result.grade == 'C' %}#E08A18{% else %}#DC3C3C{% endif %};line-height:1;">
+    {{ result.grade }}
+  </div>
+  <div style="font-size:16px;font-weight:600;color:white;margin-top:6px;">
+    {{ result.gradeLabel }}
+  </div>
+  <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px;">
+    Composite Score: {{ result.compositeScore }}/100
+  </div>
+</div>
+
+<!-- Risk Scores -->
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;">
+  <tr style="border-bottom:1px solid #EAD8B8;">
+    <td style="padding:10px 0;font-size:12px;color:#A88050;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Risk Factor</td>
+    <td style="padding:10px 0;font-size:12px;color:#A88050;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;text-align:right;">Score</td>
+  </tr>
+  <tr style="border-bottom:1px solid #F2E8D0;"><td style="padding:10px 0;font-size:13px;color:#6B4E28;">🌊 Flood Risk</td><td style="padding:10px 0;font-size:13px;color:#18100A;font-weight:700;text-align:right;">{{ result.flood }}/100</td></tr>
+  <tr style="border-bottom:1px solid #F2E8D0;"><td style="padding:10px 0;font-size:13px;color:#6B4E28;">🌧 Rainfall</td><td style="padding:10px 0;font-size:13px;color:#18100A;font-weight:700;text-align:right;">{{ result.rainfall }}/100</td></tr>
+  <tr style="border-bottom:1px solid #F2E8D0;"><td style="padding:10px 0;font-size:13px;color:#6B4E28;">🌡 Heat Stress</td><td style="padding:10px 0;font-size:13px;color:#18100A;font-weight:700;text-align:right;">{{ result.heat }}/100</td></tr>
+  <tr><td style="padding:10px 0;font-size:13px;color:#6B4E28;">🌊 Coastal Exposure</td><td style="padding:10px 0;font-size:13px;color:#18100A;font-weight:700;text-align:right;">{{ result.coastal }}/100</td></tr>
+</table>
+
+{% if result.exposureSummary %}
+<div style="background:#F7F0E4;border-left:3px solid #C8780A;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:16px;">
+  <div style="font-size:10px;font-weight:700;color:#C8780A;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Exposure Summary</div>
+  <p style="margin:0;font-size:13px;line-height:1.65;">{{ result.exposureSummary }}</p>
+</div>
+{% endif %}
+
+{% if result.recommendations %}
+<div style="background:#F7F0E4;border-left:3px solid #22A06B;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:16px;">
+  <div style="font-size:10px;font-weight:700;color:#22A06B;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Recommendations</div>
+  <p style="margin:0;font-size:13px;line-height:1.65;">{{ result.recommendations }}</p>
+</div>
+{% endif %}
+
+<div style="background:#18100A;border-radius:10px;padding:16px 20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:3px;">Estimated Adaptation Cost</div>
+    <div style="font-size:20px;font-weight:700;color:#F5C830;">{{ result.costLow }} – {{ result.costHigh }}</div>
+  </div>
+  <div style="font-size:10px;color:rgba(255,255,255,0.25);text-align:right;">Modelled<br>estimate</div>
+</div>
+
+<div style="text-align:center;margin:24px 0;">
+  <a href="{{ site_url }}/dashboard/" class="btn-primary">View All My Reports →</a>
+</div>
+
+<div class="divider"></div>
+<p style="font-size:10px;color:#A88050;line-height:1.6;">
+  ⚠️ This is a modelled exposure scoring tool. It is not engineering certification, legal advice, or an official flood clearance.
+  Always conduct independent professional surveys before any property transaction.
+</p>
+{% endblock %}

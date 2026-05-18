@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Waitlist — Admin Portal{% endblock %}
+
+{% block extra_style %}
+.portal-layout{display:flex;min-height:calc(100vh - 64px);}
+.portal-sidebar{width:220px;background:var(--dark);flex-shrink:0;padding:24px 0;}
+.portal-sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all 0.2s;border-left:3px solid transparent;}
+.portal-sidebar-item:hover{color:white;background:rgba(255,255,255,0.05);}
+.portal-sidebar-item.active{color:var(--yellow);border-left-color:var(--orange);background:rgba(200,120,10,0.08);}
+.portal-sidebar-section{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;padding:14px 22px 4px;}
+.portal-content{flex:1;padding:40px;overflow:auto;}
+{% endblock %}
+
+{% block content %}
+<div class="portal-layout">
+  {% include "portal/_sidebar.html" %}
+  <div class="portal-content">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div>
+        <h1>Waitlist</h1>
+        <p>{{ page_obj.paginator.count }} people signed up for early access.</p>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Notified</th>
+            <th>Signed Up</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for e in page_obj %}
+        <tr>
+          <td style="font-size:11px;color:var(--text-light)">{{ forloop.counter0|add:page_obj.start_index }}</td>
+          <td><strong>{{ e.full_name }}</strong></td>
+          <td style="font-size:12px;color:var(--text-light)">{{ e.email }}</td>
+          <td><span class="badge badge-grey">{{ e.role }}</span></td>
+          <td>
+            {% if e.notified %}<span class="badge badge-green">✓ Notified</span>
+            {% else %}<span class="badge badge-grey">Pending</span>{% endif %}
+          </td>
+          <td style="font-size:11px;color:var(--text-light);white-space:nowrap">{{ e.created_at|date:"M d, Y H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'portal_waitlist_toggle_notified' e.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn {% if e.notified %}btn-outline{% else %}btn-success{% endif %} btn-sm">
+                {% if e.notified %}Mark Pending{% else %}Mark Notified{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:40px;">No waitlist entries yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">‹</a>{% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}<span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}<a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">›</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

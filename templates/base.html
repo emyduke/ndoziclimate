@@ -1,0 +1,181 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Ndozi Climate{% endblock %} — Ndozi Climate</title>
+<meta name="description" content="Africa's first climate due diligence engine. Know your land's climate grade before you invest.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & VARIABLES ─────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --orange:#C8780A;--orange-bright:#E08A18;--orange-glow:rgba(200,120,10,0.14);
+  --yellow:#F5C830;--yellow-soft:#FFFAED;
+  --green:#22A06B;--red:#DC3C3C;--blue:#3B7BE8;
+  --white:#fff;--cream:#FDFAF4;--warm:#F7F0E4;
+  --dark:#18100A;--text:#18100A;--text-mid:#6B4E28;--text-light:#A88050;
+  --border:#EAD8B8;--border-soft:#F2E8D0;--shadow:rgba(24,16,10,0.08);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── APP NAV ───────────────────────────────────────────────────── */
+.app-nav{height:64px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500;}
+.app-nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);}
+.app-nav-logo img{height:36px;width:auto;}
+.app-nav-logo span{color:var(--text);}
+.app-nav-logo .ora{color:var(--orange);}
+.app-nav-links{display:flex;align-items:center;gap:8px;}
+.app-nav-links a{font-size:13px;font-weight:500;color:var(--text-mid);text-decoration:none;padding:7px 14px;border-radius:8px;transition:all 0.2s;}
+.app-nav-links a:hover{color:var(--text);background:var(--warm);}
+.app-nav-links .nav-badge{font-size:9px;font-weight:700;background:var(--orange-glow);color:var(--orange);padding:2px 7px;border-radius:100px;letter-spacing:0.5px;}
+
+/* ── BUTTONS ───────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;font-size:13px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:inherit;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+.btn-primary{background:var(--orange);color:white;box-shadow:0 2px 10px rgba(200,120,10,0.25);}
+.btn-primary:hover{background:var(--orange-bright);transform:translateY(-1px);color:white;}
+.btn-outline{background:white;color:var(--text-mid);border:1.5px solid var(--border);}
+.btn-outline:hover{border-color:var(--orange);color:var(--orange);}
+.btn-danger{background:#FEF0F0;color:var(--red);border:1.5px solid rgba(220,60,60,0.2);}
+.btn-danger:hover{background:var(--red);color:white;}
+.btn-success{background:#EDF9F3;color:var(--green);border:1.5px solid rgba(34,160,107,0.2);}
+.btn-success:hover{background:var(--green);color:white;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-lg{padding:14px 28px;font-size:15px;}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none !important;}
+
+/* ── FORMS ─────────────────────────────────────────────────────── */
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:6px;letter-spacing:0.4px;text-transform:uppercase;}
+.form-control{width:100%;padding:12px 15px;font-size:14px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--text);font-family:inherit;outline:none;transition:border-color 0.2s,background 0.2s;-webkit-appearance:none;appearance:none;}
+.form-control:focus{border-color:var(--orange);background:white;}
+.form-control::placeholder{color:var(--text-light);}
+.form-error{font-size:11px;color:var(--red);margin-top:4px;}
+
+/* ── ALERTS ────────────────────────────────────────────────────── */
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:18px;line-height:1.5;}
+.alert-error{background:#FEF0F0;border:1.5px solid rgba(220,60,60,0.2);color:#B42229;}
+.alert-success{background:#EDF9F3;border:1.5px solid rgba(34,160,107,0.2);color:#1A7A52;}
+.alert-info{background:var(--orange-glow);border:1.5px solid rgba(200,120,10,0.2);color:var(--orange);}
+
+/* ── MESSAGES (Django) ─────────────────────────────────────────── */
+.messages-list{list-style:none;margin-bottom:20px;}
+.messages-list li{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:8px;}
+.messages-list .success{background:#EDF9F3;border:1.5px solid rgba(34,160,107,0.2);color:#1A7A52;}
+.messages-list .error{background:#FEF0F0;border:1.5px solid rgba(220,60,60,0.2);color:#B42229;}
+.messages-list .info{background:var(--orange-glow);border:1.5px solid rgba(200,120,10,0.2);color:var(--orange);}
+.messages-list .warning{background:#FFFBEC;border:1.5px solid rgba(200,160,10,0.2);color:#92700A;}
+
+/* ── BADGES ────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.3px;}
+.badge-green{background:#EDF9F3;color:var(--green);}
+.badge-red{background:#FEF0F0;color:var(--red);}
+.badge-blue{background:#EEF4FE;color:var(--blue);}
+.badge-grey{background:var(--warm);color:var(--text-mid);}
+.badge-yellow{background:#FFFAED;color:#92700A;}
+.badge-a{background:rgba(34,160,107,0.1);color:#1A7A52;}
+.badge-b{background:rgba(245,200,48,0.15);color:#92700A;}
+.badge-c{background:rgba(200,120,10,0.1);color:var(--orange);}
+.badge-d{background:rgba(220,60,60,0.1);color:var(--red);}
+
+/* ── CARDS ─────────────────────────────────────────────────────── */
+.card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 2px 16px var(--shadow);}
+.card-sm{padding:20px;}
+.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.card-sub{font-size:12px;color:var(--text-light);}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:2px;}
+.stat-label{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;}
+.stat-change{font-size:11px;color:var(--green);margin-top:4px;}
+
+/* ── TABLE ─────────────────────────────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table thead tr{background:var(--warm);}
+.data-table th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.5px;text-align:left;border-bottom:1.5px solid var(--border);}
+.data-table td{padding:12px 14px;border-bottom:1px solid var(--border-soft);vertical-align:middle;}
+.data-table tbody tr:hover{background:var(--cream);}
+.data-table tbody tr:last-child td{border-bottom:none;}
+
+/* ── PAGINATION ────────────────────────────────────────────────── */
+.pagination{display:flex;align-items:center;gap:6px;margin-top:20px;flex-wrap:wrap;}
+.pagination a,.pagination span{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 8px;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;transition:all 0.2s;}
+.pagination a{border:1.5px solid var(--border);color:var(--text-mid);}
+.pagination a:hover{border-color:var(--orange);color:var(--orange);}
+.pagination .current{background:var(--orange);color:white;border-radius:8px;min-width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+
+/* ── PAGE LAYOUT ───────────────────────────────────────────────── */
+.page-wrap{max-width:1100px;margin:0 auto;padding:40px 40px 80px;}
+.page-header{margin-bottom:28px;}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.page-header p{font-size:13px;color:var(--text-light);}
+.page-breadcrumb{font-size:12px;color:var(--text-light);margin-bottom:18px;}
+.page-breadcrumb a{color:var(--orange);text-decoration:none;}
+.page-breadcrumb a:hover{text-decoration:underline;}
+
+/* ── SEARCH BAR ────────────────────────────────────────────────── */
+.search-bar{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.search-input{padding:10px 15px;font-size:13px;border:1.5px solid var(--border);border-radius:8px;background:white;color:var(--text);font-family:inherit;outline:none;transition:border-color 0.2s;min-width:220px;}
+.search-input:focus{border-color:var(--orange);}
+
+/* ── PORTAL LAYOUT ─────────────────────────────────────────────── */
+.portal-layout{display:flex;min-height:calc(100vh - 64px);}
+.portal-sidebar{width:220px;background:var(--dark);flex-shrink:0;padding:24px 0;}
+.portal-sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all 0.2s;border-left:3px solid transparent;}
+.portal-sidebar-item:hover{color:white;background:rgba(255,255,255,0.05);}
+.portal-sidebar-item.active{color:var(--yellow);border-left-color:var(--orange);background:rgba(200,120,10,0.08);}
+.portal-sidebar-section{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;padding:14px 22px 4px;}
+.portal-content{flex:1;padding:40px;overflow:auto;}
+
+/* ── MISC ──────────────────────────────────────────────────────── */
+.pulse{width:5px;height:5px;background:var(--yellow);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@media(max-width:640px){.app-nav{padding:0 20px;}.page-wrap{padding:24px 20px 60px;}.stat-cards{grid-template-columns:1fr 1fr;}.portal-layout{flex-direction:column;}.portal-sidebar{width:100%;padding:12px 0;}}
+
+{% block extra_style %}{% endblock %}
+</style>
+</head>
+<body>
+
+{% block nav %}
+<nav class="app-nav">
+  <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}/{% endif %}" class="app-nav-logo">
+    <img src="{% static 'logo.png' %}" alt="Ndozi Climate" onerror="this.style.display='none'">
+    <span>Ndozi <span class="ora">Climate</span></span>
+  </a>
+  <div class="app-nav-links">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'assessment_history' %}">My Reports</a>
+      {% if user.is_staff or user.is_superuser %}
+        <a href="{% url 'portal_dashboard' %}" class="nav-badge">Admin Portal</a>
+      {% endif %}
+      <form method="post" action="{% url 'signout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline btn-sm">Sign Out</button>
+      </form>
+    {% else %}
+      <a href="{% url 'signin' %}">Sign In</a>
+      <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Get Started →</a>
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}
+
+{% if messages %}
+<div class="page-wrap" style="padding-bottom:0;padding-top:20px;">
+  <ul class="messages-list">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

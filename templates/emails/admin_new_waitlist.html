@@ -1,0 +1,16 @@
+{% extends "emails/base_email.html" %}
+{% block subject %}[Admin] New waitlist entry: {{ entry.email }}{% endblock %}
+
+{% block body %}
+<div class="tag">Admin Alert</div>
+<h1>New waitlist entry</h1>
+<div class="divider"></div>
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;">
+  <tr><td style="padding:10px 0;font-size:12px;color:#A88050;border-bottom:1px solid #EAD8B8;font-weight:600;width:140px;">Name</td><td style="padding:10px 0;font-size:13px;color:#18100A;border-bottom:1px solid #EAD8B8;">{{ entry.full_name }}</td></tr>
+  <tr><td style="padding:10px 0;font-size:12px;color:#A88050;border-bottom:1px solid #EAD8B8;font-weight:600;">Email</td><td style="padding:10px 0;font-size:13px;color:#18100A;border-bottom:1px solid #EAD8B8;">{{ entry.email }}</td></tr>
+  <tr><td style="padding:10px 0;font-size:12px;color:#A88050;font-weight:600;">Role</td><td style="padding:10px 0;font-size:13px;color:#18100A;">{{ entry.role }}</td></tr>
+</table>
+<div style="text-align:center;margin-top:20px;">
+  <a href="{{ site_url }}/portal/waitlist/" class="btn-primary">View Waitlist →</a>
+</div>
+{% endblock %}

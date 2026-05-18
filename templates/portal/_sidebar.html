@@ -1,0 +1,29 @@
+<aside class="portal-sidebar">
+  <div class="portal-sidebar-section">Overview</div>
+  <a href="{% url 'portal_dashboard' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_dashboard' %}active{% endif %}">
+    📊 Dashboard
+  </a>
+  <div class="portal-sidebar-section">Management</div>
+  <a href="{% url 'portal_users' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_users' %}active{% endif %}">
+    👤 Users
+  </a>
+  <a href="{% url 'portal_assessments' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_assessments' %}active{% endif %}">
+    🌍 Assessments
+  </a>
+  <a href="{% url 'portal_waitlist' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_waitlist' %}active{% endif %}">
+    📋 Waitlist
+  </a>
+  <a href="{% url 'portal_activity_logs' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_activity_logs' %}active{% endif %}">
+    🧾 Activity Logs
+  </a>
+  <a href="{% url 'portal_email_events' %}" class="portal-sidebar-item {% if request.resolver_match.url_name == 'portal_email_events' %}active{% endif %}">
+    ✉️ Email Events
+  </a>
+  <div class="portal-sidebar-section">System</div>
+  <a href="/admin/" class="portal-sidebar-item" target="_blank">
+    ⚙️ Django Admin ↗
+  </a>
+  <a href="{% url 'dashboard' %}" class="portal-sidebar-item">
+    ← Back to App
+  </a>
+</aside>

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Admin Portal{% endblock %}
+
+{% block extra_style %}
+.portal-layout{display:flex;min-height:calc(100vh - 64px);}
+.portal-sidebar{width:220px;background:var(--dark);flex-shrink:0;padding:24px 0;}
+.portal-sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all 0.2s;border-left:3px solid transparent;}
+.portal-sidebar-item:hover{color:white;background:rgba(255,255,255,0.05);}
+.portal-sidebar-item.active{color:var(--yellow);border-left-color:var(--orange);background:rgba(200,120,10,0.08);}
+.portal-sidebar-section{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;padding:14px 22px 4px;}
+.portal-content{flex:1;padding:40px;overflow:auto;}
+.grade-display{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;}
+.grade-display-a{color:#22A06B;}
+.grade-display-b{color:var(--yellow);}
+.grade-display-c{color:var(--orange);}
+.grade-display-d{color:var(--red);}
+{% endblock %}
+
+{% block content %}
+<div class="portal-layout">
+  {% include "portal/_sidebar.html" %}
+  <div class="portal-content">
+    <div class="page-header">
+      <h1>Admin Portal</h1>
+      <p>Overview of all platform activity and users.</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="card card-sm">
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-change">{{ active_users }} active</div>
+      </div>
+      <div class="card card-sm">
+        <div class="stat-value">{{ total_assessments }}</div>
+        <div class="stat-label">Assessments Run</div>
+      </div>
+      <div class="card card-sm">
+        <div class="stat-value">{{ total_waitlist }}</div>
+        <div class="stat-label">Waitlist Entries</div>
+      </div>
+      <div class="card card-sm">
+        <div class="stat-value">{% if avg_score %}{{ avg_score|floatformat:0 }}{% else %}—{% endif %}</div>
+        <div class="stat-label">Avg. Climate Score</div>
+      </div>
+      <div class="card card-sm">
+        <div class="stat-value">{{ total_admin_actions }}</div>
+        <div class="stat-label">Admin Actions Logged</div>
+      </div>
+      <div class="card card-sm">
+        <div class="stat-value">{{ recent_email_events|length }}</div>
+        <div class="stat-label">Recent Email Events</div>
+      </div>
+    </div>
+
+    <!-- Grade Distribution -->
+    {% if grade_stats %}
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div>
+          <div class="card-title">Grade Distribution</div>
+          <div class="card-sub">Assessment outcomes across all users</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        {% for g in grade_stats %}
+        <div style="flex:1;min-width:80px;background:var(--warm);border:1.5px solid var(--border);border-radius:12px;padding:16px;text-align:center;">
+          <div class="grade-display grade-display-{{ g.grade|lower }}">{{ g.grade }}</div>
+          <div style="font-size:20px;font-weight:700;margin-top:4px;">{{ g.count }}</div>
+          <div style="font-size:10px;color:var(--text-light);">assessments</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <!-- Recent Assessments -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="card-title">Recent Assessments</div>
+            <div class="card-sub">Latest runs</div>
+          </div>
+          <a href="{% url 'portal_assessments' %}" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>User</th><th>State</th><th>Grade</th><th>Date</th></tr></thead>
+          <tbody>
+          {% for a in recent_assessments %}
+          <tr>
+            <td style="font-size:12px">{{ a.user.email|default:"—" }}</td>
+            <td>{{ a.state }}</td>
+            <td><span class="badge badge-{{ a.grade|lower }}">{{ a.grade }}</span></td>
+            <td style="font-size:11px;color:var(--text-light)">{{ a.created_at|date:"M d" }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Recent Users -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="card-title">New Users</div>
+            <div class="card-sub">Most recently joined</div>
+          </div>
+          <a href="{% url 'portal_users' %}" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>User</th><th>Status</th><th>Joined</th></tr></thead>
+          <tbody>
+          {% for u in recent_users %}
+          <tr>
+            <td>
+              <div style="font-size:13px;font-weight:600;">{{ u.get_full_name|default:u.username }}</div>
+              <div style="font-size:11px;color:var(--text-light)">{{ u.email }}</div>
+            </td>
+            <td>
+              {% if u.is_active %}<span class="badge badge-green">Active</span>{% else %}<span class="badge badge-red">Inactive</span>{% endif %}
+              {% if u.is_staff %}<span class="badge badge-blue">Staff</span>{% endif %}
+            </td>
+            <td style="font-size:11px;color:var(--text-light)">{{ u.date_joined|date:"M d, Y" }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;margin-top:24px;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="card-title">Recent Admin Activity</div>
+          <div class="card-sub">Traceable management actions across the portal</div>
+        </div>
+        <a href="{% url 'portal_activity_logs' %}" class="btn btn-outline btn-sm">View Full Logs</a>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Actor</th><th>Action</th><th>Summary</th><th>When</th></tr></thead>
+        <tbody>
+        {% for log in recent_admin_actions %}
+        <tr>
+          <td style="font-size:12px;">{{ log.actor.email|default:"System" }}</td>
+          <td><span class="badge badge-grey">{{ log.action }}</span></td>
+          <td style="font-size:12px;">{{ log.summary }}</td>
+          <td style="font-size:11px;color:var(--text-light);white-space:nowrap;">{{ log.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:32px;">No admin actions logged yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;margin-top:24px;">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="card-title">Recent Email Delivery Events</div>
+          <div class="card-sub">Latest queued, sent, and failed transactional emails</div>
+        </div>
+        <a href="{% url 'portal_email_events' %}" class="btn btn-outline btn-sm">View Email Logs</a>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Recipients</th><th>Subject</th><th>Status</th><th>Template</th><th>Created</th></tr></thead>
+        <tbody>
+        {% for event in recent_email_events %}
+        <tr>
+          <td style="font-size:12px;max-width:220px;word-break:break-word;">{{ event.recipient_list }}</td>
+          <td style="font-size:12px;max-width:260px;word-break:break-word;">{{ event.subject }}</td>
+          <td>
+            {% if event.status == 'sent' %}
+            <span class="badge badge-green">Sent</span>
+            {% elif event.status == 'failed' %}
+            <span class="badge badge-red">Failed</span>
+            {% else %}
+            <span class="badge badge-yellow">Queued</span>
+            {% endif %}
+          </td>
+          <td><span class="badge badge-grey">{{ event.template_name }}</span></td>
+          <td style="font-size:11px;color:var(--text-light);white-space:nowrap;">{{ event.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:32px;">No email events yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

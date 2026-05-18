@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Email Events - Admin Portal{% endblock %}
+
+{% block extra_style %}
+.portal-layout{display:flex;min-height:calc(100vh - 64px);} 
+.portal-sidebar{width:220px;background:var(--dark);flex-shrink:0;padding:24px 0;} 
+.portal-sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all 0.2s;border-left:3px solid transparent;} 
+.portal-sidebar-item:hover{color:white;background:rgba(255,255,255,0.05);} 
+.portal-sidebar-item.active{color:var(--yellow);border-left-color:var(--orange);background:rgba(200,120,10,0.08);} 
+.portal-sidebar-section{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;padding:14px 22px 4px;} 
+.portal-content{flex:1;padding:40px;overflow:auto;} 
+{% endblock %}
+
+{% block content %}
+<div class="portal-layout">
+  {% include "portal/_sidebar.html" %}
+  <div class="portal-content">
+    <div class="page-header">
+      <h1>Email Events</h1>
+      <p>Delivery telemetry for transactional and admin emails.</p>
+    </div>
+
+    <form method="get" class="search-bar">
+      <input type="text" name="q" class="search-input" placeholder="Search recipient or subject..." value="{{ query }}">
+      <select name="status" class="search-input" style="min-width:160px;">
+        <option value="" {% if not status_filter %}selected{% endif %}>All statuses</option>
+        <option value="queued" {% if status_filter == 'queued' %}selected{% endif %}>Queued</option>
+        <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Sent</option>
+        <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      {% if query or status_filter %}<a href="{% url 'portal_email_events' %}" class="btn btn-outline btn-sm">Clear</a>{% endif %}
+    </form>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Recipients</th>
+            <th>Subject</th>
+            <th>Template</th>
+            <th>Status</th>
+            <th>Sent At</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in page_obj %}
+          <tr>
+            <td style="font-size:11px;color:var(--text-light);white-space:nowrap;">{{ event.created_at|date:"M d, Y H:i:s" }}</td>
+            <td style="font-size:12px;max-width:180px;word-break:break-word;">{{ event.recipient_list }}</td>
+            <td style="font-size:12px;max-width:220px;word-break:break-word;">{{ event.subject }}</td>
+            <td><span class="badge badge-grey">{{ event.template_name }}</span></td>
+            <td>
+              {% if event.status == 'sent' %}
+              <span class="badge badge-green">Sent</span>
+              {% elif event.status == 'failed' %}
+              <span class="badge badge-red">Failed</span>
+              {% else %}
+              <span class="badge badge-yellow">Queued</span>
+              {% endif %}
+            </td>
+            <td style="font-size:11px;color:var(--text-light);white-space:nowrap;">{{ event.sent_at|date:"M d, Y H:i:s"|default:"-" }}</td>
+            <td style="font-size:11px;color:var(--text-light);max-width:260px;word-break:break-word;">{{ event.error_message|default:"-" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:40px;">No email events found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">‹</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+      <span class="current">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+      <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+      {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">›</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

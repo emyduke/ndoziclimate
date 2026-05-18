@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Assessments — Admin Portal{% endblock %}
+
+{% block extra_style %}
+.portal-layout{display:flex;min-height:calc(100vh - 64px);}
+.portal-sidebar{width:220px;background:var(--dark);flex-shrink:0;padding:24px 0;}
+.portal-sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all 0.2s;border-left:3px solid transparent;}
+.portal-sidebar-item:hover{color:white;background:rgba(255,255,255,0.05);}
+.portal-sidebar-item.active{color:var(--yellow);border-left-color:var(--orange);background:rgba(200,120,10,0.08);}
+.portal-sidebar-section{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;padding:14px 22px 4px;}
+.portal-content{flex:1;padding:40px;overflow:auto;}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.grade-filter a{display:inline-flex;align-items:center;padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;text-decoration:none;border:1.5px solid var(--border);color:var(--text-mid);transition:all 0.2s;}
+.grade-filter a:hover,.grade-filter a.active{border-color:var(--orange);color:var(--orange);}
+{% endblock %}
+
+{% block content %}
+<div class="portal-layout">
+  {% include "portal/_sidebar.html" %}
+  <div class="portal-content">
+    <div class="page-header">
+      <h1>All Assessments</h1>
+      <p>Every climate risk assessment run on the platform.</p>
+    </div>
+
+    <div class="filter-bar">
+      <form method="get" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="text" name="q" class="search-input" placeholder="Search by state or user…" value="{{ search }}" style="max-width:240px;">
+        <div class="grade-filter" style="display:flex;gap:6px;">
+          <a href="?{% if search %}q={{ search }}&{% endif %}" class="{% if not grade_filter %}active{% endif %}">All</a>
+          {% for g in grades %}
+          <a href="?grade={{ g }}{% if search %}&q={{ search }}{% endif %}" class="badge badge-{{ g|lower }} {% if grade_filter == g %}active{% endif %}">{{ g }}</a>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        {% if search or grade_filter %}<a href="{% url 'portal_assessments' %}" class="btn btn-outline btn-sm">Clear</a>{% endif %}
+      </form>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>State</th>
+            <th>Property Type</th>
+            <th>Grade</th>
+            <th>Score</th>
+            <th>Flood</th>
+            <th>Rain</th>
+            <th>Heat</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for a in page_obj %}
+        <tr>
+          <td style="font-size:11px;color:var(--text-light)">#{{ a.pk }}</td>
+          <td style="font-size:12px">{{ a.user.email|default:"Anonymous" }}</td>
+          <td><strong>{{ a.state }}</strong></td>
+          <td style="font-size:12px;color:var(--text-light)">{{ a.property_type|truncatechars:24 }}</td>
+          <td><span class="badge badge-{{ a.grade|lower }}">{{ a.grade }}: {{ a.grade_label }}</span></td>
+          <td><strong>{{ a.composite_score }}</strong></td>
+          <td>{{ a.flood_score }}</td>
+          <td>{{ a.rainfall_score }}</td>
+          <td>{{ a.heat_score }}</td>
+          <td style="font-size:11px;color:var(--text-light);white-space:nowrap">{{ a.created_at|date:"M d, Y H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'portal_delete_assessment' a.pk %}" onsubmit="return confirm('Delete assessment #{{ a.pk }}? This cannot be undone.');" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11" style="text-align:center;color:var(--text-light);padding:40px;">No assessments found.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if grade_filter %}&grade={{ grade_filter }}{% endif %}">‹</a>{% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}<span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}<a href="?page={{ num }}{% if search %}&q={{ search }}{% endif %}{% if grade_filter %}&grade={{ grade_filter }}{% endif %}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if grade_filter %}&grade={{ grade_filter }}{% endif %}">›</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

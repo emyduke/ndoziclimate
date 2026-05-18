@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}Assessment Report{% endblock %}
+
+{% block extra_style %}
+.detail-hero{background:var(--dark);padding:36px 40px 0;}
+.detail-hero-inner{max-width:1100px;margin:0 auto;}
+.breadcrumb{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px;}
+.breadcrumb a{color:rgba(255,255,255,0.5);text-decoration:none;}
+.breadcrumb a:hover{color:var(--yellow);}
+.breadcrumb span{color:rgba(255,255,255,0.2);margin:0 6px;}
+.detail-title-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:32px;}
+.detail-location{color:white;}
+.detail-location h1{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;margin-bottom:4px;}
+.detail-location p{font-size:13px;color:rgba(255,255,255,0.4);}
+.detail-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.meta-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:6px 12px;border-radius:100px;letter-spacing:0.3px;}
+.meta-chip-dark{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);}
+.meta-chip-orange{background:rgba(200,120,10,0.15);color:var(--yellow);border:1px solid rgba(200,120,10,0.3);}
+
+.report-body{max-width:1100px;margin:0 auto;padding:36px 40px 80px;}
+
+/* Grade card */
+.grade-card{background:white;border:1.5px solid var(--border);border-radius:20px;padding:32px;margin-bottom:28px;box-shadow:0 4px 32px var(--shadow);display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+.grade-letter{font-family:'Cormorant Garamond',serif;font-size:100px;font-weight:700;line-height:1;}
+.grade-a{color:#22A06B;}.grade-b{color:#F5C830;}.grade-c{color:#E08A18;}.grade-d{color:#DC3C3C;}
+.grade-info{flex:1;}
+.grade-info-sub{font-size:11px;font-weight:600;color:var(--text-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.grade-info h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.grade-info .score-text{font-size:14px;color:var(--text-mid);}
+.score-badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:8px 18px;border-radius:100px;margin-top:10px;}
+.score-badge-a{background:rgba(34,160,107,0.1);color:#22A06B;}
+.score-badge-b{background:rgba(245,200,48,0.15);color:#92700A;}
+.score-badge-c{background:rgba(200,120,10,0.1);color:var(--orange);}
+.score-badge-d{background:rgba(220,60,60,0.1);color:#DC3C3C;}
+
+/* Score bars */
+.scores-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px;}
+.score-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px 22px;box-shadow:0 2px 12px var(--shadow);}
+.score-card-label{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.score-val-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.score-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;line-height:1;}
+.score-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;}
+.bar-track{height:8px;background:var(--border-soft);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;}
+
+/* Narrative */
+.narrative-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px var(--shadow);}
+.narrative-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-soft);}
+.narrative-body{font-size:14px;color:var(--text-mid);line-height:1.8;white-space:pre-wrap;}
+
+/* Cost */
+.cost-card{background:var(--dark);border-radius:16px;padding:28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.cost-left .cost-sub{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.cost-range{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;color:var(--yellow);line-height:1;}
+.cost-note{font-size:12px;color:rgba(255,255,255,0.3);margin-top:6px;}
+.cost-right{text-align:right;}
+.cost-right .cost-type{font-size:12px;color:rgba(255,255,255,0.4);}
+.cost-right .cost-grade{font-size:13px;font-weight:600;color:white;margin-top:4px;}
+
+/* Data sources */
+.sources-card{background:var(--warm);border:1.5px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:20px;}
+.sources-card h4{font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.source-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.source-pill{font-size:11px;font-weight:500;color:var(--text-mid);background:white;border:1px solid var(--border);border-radius:100px;padding:4px 12px;}
+
+/* Notes */
+.notes-card{background:rgba(200,120,10,0.04);border:1px solid rgba(200,120,10,0.15);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--text-mid);line-height:1.7;}
+.notes-card strong{color:var(--orange);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:6px;}
+
+/* Disclaimer */
+.disclaimer-card{font-size:11px;color:var(--text-light);line-height:1.7;padding:14px 18px;background:rgba(200,120,10,0.03);border:1px solid rgba(200,120,10,0.1);border-radius:10px;}
+
+/* Actions */
+.action-bar{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+
+@media(max-width:700px){
+  .detail-hero{padding:24px 20px 0;}
+  .report-body{padding:24px 20px 60px;}
+  .scores-grid{grid-template-columns:1fr;}
+  .grade-card{flex-direction:column;align-items:flex-start;}
+  .grade-letter{font-size:72px;}
+  .cost-card{flex-direction:column;}
+}
+{% endblock %}
+
+{% block content %}
+<div class="detail-hero">
+  <div class="detail-hero-inner">
+    <div class="breadcrumb">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <span>/</span>
+      <a href="{% url 'assessment_history' %}">My Reports</a>
+      <span>/</span>
+      <span style="color:rgba(255,255,255,0.6);">Report #{{ result.pk }}</span>
+    </div>
+    <div class="detail-title-row">
+      <div class="detail-location">
+        <h1>{{ result.state }} &mdash; {{ result.property_type|title }}</h1>
+        <p>{{ result.latitude|floatformat:4 }}, {{ result.longitude|floatformat:4 }} &middot; {{ result.created_at|date:"j M Y, g:ia" }}</p>
+      </div>
+      <div class="detail-meta">
+        <span class="meta-chip meta-chip-dark">{{ result.state }}</span>
+        <span class="meta-chip meta-chip-dark">{{ result.property_type|title }}</span>
+        <span class="meta-chip meta-chip-orange">Grade {{ result.grade }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="report-body">
+
+  <!-- Action bar -->
+  <div class="action-bar">
+    <a href="{% url 'assessment_history' %}" class="btn btn-outline btn-sm">← Back to All Reports</a>
+    <button onclick="window.print()" class="btn btn-outline btn-sm">🖨 Print Report</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-sm">Run New Assessment →</a>
+  </div>
+
+  <!-- Grade headline -->
+  <div class="grade-card">
+    <div class="grade-letter grade-{{ result.grade|lower }}">{{ result.grade }}</div>
+    <div class="grade-info">
+      <div class="grade-info-sub">Climate Investment Grade</div>
+      <h2>{{ result.grade_label }}</h2>
+      <div class="score-text">Composite climate risk score</div>
+      <span class="score-badge score-badge-{{ result.grade|lower }}">
+        {{ result.composite_score }} / 100 composite score
+      </span>
+    </div>
+  </div>
+
+  <!-- Individual scores -->
+  <div class="scores-grid">
+    {% with result.flood_score as val %}
+    <div class="score-card">
+      <div class="score-card-label">Flood Exposure</div>
+      <div class="score-val-row">
+        <div class="score-val {% if val <= 30 %}grade-a{% elif val <= 55 %}grade-b{% elif val <= 75 %}grade-c{% else %}grade-d{% endif %}">{{ val }}</div>
+        <span class="score-tag {% if val <= 30 %}score-badge-a{% elif val <= 55 %}score-badge-b{% elif val <= 75 %}score-badge-c{% else %}score-badge-d{% endif %}">
+          {% if val <= 30 %}Low{% elif val <= 55 %}Moderate{% elif val <= 75 %}High{% else %}Critical{% endif %}
+        </span>
+      </div>
+      <div class="bar-track"><div class="bar-fill {% if val <= 30 %}grade-a{% elif val <= 55 %}grade-b{% elif val <= 75 %}grade-c{% else %}grade-d{% endif %}" style="width:{{ val }}%;background:{% if val <= 30 %}#22A06B{% elif val <= 55 %}#F5C830{% elif val <= 75 %}#E08A18{% else %}#DC3C3C{% endif %};"></div></div>
+    </div>
+    {% endwith %}
+
+    {% with result.rainfall_score as val %}
+    <div class="score-card">
+      <div class="score-card-label">Rainfall Risk</div>
+      <div class="score-val-row">
+        <div class="score-val {% if val <= 30 %}grade-a{% elif val <= 55 %}grade-b{% elif val <= 75 %}grade-c{% else %}grade-d{% endif %}">{{ val }}</div>
+        <span class="score-tag {% if val <= 30 %}score-badge-a{% elif val <= 55 %}score-badge-b{% elif val <= 75 %}score-badge-c{% else %}score-badge-d{% endif %}">
+          {% if val <= 30 %}Low{% elif val <= 55 %}Moderate{% elif val <= 75 %}High{% else %}Critical{% endif %}
+        </span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:{{ val }}%;background:{% if val <= 30 %}#22A06B{% elif val <= 55 %}#F5C830{% elif val <= 75 %}#E08A18{% else %}#DC3C3C{% endif %};"></div></div>
+    </div>
+    {% endwith %}
+
+    {% with result.heat_score as val %}
+    <div class="score-card">
+      <div class="score-card-label">Heat Index</div>
+      <div class="score-val-row">
+        <div class="score-val {% if val <= 30 %}grade-a{% elif val <= 55 %}grade-b{% elif val <= 75 %}grade-c{% else %}grade-d{% endif %}">{{ val }}</div>
+        <span class="score-tag {% if val <= 30 %}score-badge-a{% elif val <= 55 %}score-badge-b{% elif val <= 75 %}score-badge-c{% else %}score-badge-d{% endif %}">
+          {% if val <= 30 %}Low{% elif val <= 55 %}Moderate{% elif val <= 75 %}High{% else %}Critical{% endif %}
+        </span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:{{ val }}%;background:{% if val <= 30 %}#22A06B{% elif val <= 55 %}#F5C830{% elif val <= 75 %}#E08A18{% else %}#DC3C3C{% endif %};"></div></div>
+    </div>
+    {% endwith %}
+
+    {% with result.coastal_score as val %}
+    <div class="score-card">
+      <div class="score-card-label">Coastal Risk</div>
+      <div class="score-val-row">
+        <div class="score-val {% if val <= 30 %}grade-a{% elif val <= 55 %}grade-b{% elif val <= 75 %}grade-c{% else %}grade-d{% endif %}">{{ val }}</div>
+        <span class="score-tag {% if val <= 30 %}score-badge-a{% elif val <= 55 %}score-badge-b{% elif val <= 75 %}score-badge-c{% else %}score-badge-d{% endif %}">
+          {% if val <= 30 %}Minimal{% elif val <= 55 %}Moderate{% elif val <= 75 %}High{% else %}Critical{% endif %}
+        </span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:{{ val }}%;background:{% if val <= 30 %}#22A06B{% elif val <= 55 %}#F5C830{% elif val <= 75 %}#E08A18{% else %}#DC3C3C{% endif %};"></div></div>
+    </div>
+    {% endwith %}
+  </div>
+
+  <!-- Exposure narrative -->
+  <div class="narrative-card">
+    <h3>10-Year Exposure Summary</h3>
+    <div class="narrative-body">{{ result.exposure_summary }}</div>
+  </div>
+
+  <!-- Adaptation cost -->
+  <div class="cost-card">
+    <div class="cost-left">
+      <div class="cost-sub">Estimated 10-Year Climate Adaptation Cost</div>
+      <div class="cost-range">{{ result.cost_low }} &ndash; {{ result.cost_high }}</div>
+      <div class="cost-note">Indicative range based on grade, location, and property type. Not a contractor quote.</div>
+    </div>
+    <div class="cost-right">
+      <div class="cost-type">{{ result.property_type|title }}</div>
+      <div class="cost-grade">Grade {{ result.grade }} &mdash; {{ result.grade_label }}</div>
+    </div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="narrative-card">
+    <h3>Adaptation Recommendations</h3>
+    <div class="narrative-body">{{ result.recommendations }}</div>
+  </div>
+
+  <!-- User notes -->
+  {% if result.notes %}
+  <div class="notes-card">
+    <strong>Your Notes</strong>
+    {{ result.notes }}
+  </div>
+  {% endif %}
+
+  <!-- Data sources -->
+  {% if result.data_sources_used %}
+  <div class="sources-card">
+    <h4>Data Sources Used</h4>
+    <div class="source-pills">
+      {% for source in result.data_sources_used %}
+      <span class="source-pill">{{ source }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Data notes -->
+  {% if result.data_notes %}
+  <div class="notes-card">
+    <strong>Data Notes</strong>
+    {{ result.data_notes }}
+  </div>
+  {% endif %}
+
+  <!-- Disclaimer -->
+  <div class="disclaimer-card">
+    ⚠ This report is a modeled exposure scoring output based on publicly available geospatial and climate datasets. It does not constitute a professional engineering certification, legal advice, a structural assessment, or an official flood clearance. All scores are probabilistic estimates. Cost ranges are indicative only. Always conduct independent professional surveys and legal reviews before any property transaction. Ndozi Climate shall not be held liable for investment decisions made on the basis of this report.
+  </div>
+
+</div>
+{% endblock %}

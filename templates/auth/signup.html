@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
+
+{% block nav %}
+<nav class="app-nav">
+  <a href="/" class="app-nav-logo">
+    <img src="/static/logo.png" alt="Ndozi Climate" onerror="this.style.display='none'">
+    <span>Ndozi Climate</span>
+  </a>
+  <div class="app-nav-links">
+    <a href="{% url 'signin' %}">Already have an account? Sign in →</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block extra_style %}
+.auth-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:var(--cream);}
+.auth-card{width:100%;max-width:460px;background:white;border:1.5px solid var(--border);border-radius:20px;padding:40px;box-shadow:0 8px 48px rgba(24,16,10,0.08);}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.auth-logo span{color:var(--orange);}
+.auth-tagline{font-size:13px;color:var(--text-light);margin-bottom:32px;}
+.auth-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text-light);font-size:11px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-footer{text-align:center;font-size:12px;color:var(--text-light);margin-top:18px;}
+.auth-footer a{color:var(--orange);text-decoration:none;font-weight:600;}
+.names-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">Ndozi <span>Climate</span></div>
+    <div class="auth-tagline">Africa's first climate due diligence engine</div>
+    <div class="auth-title">Create your account</div>
+
+    {% if form.errors %}
+    <div class="alert alert-error">
+      Please correct the errors below.
+    </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="names-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-control" placeholder="Amara" value="{{ request.POST.first_name }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-control" placeholder="Okafor" value="{{ request.POST.last_name }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-control" placeholder="you@example.com" value="{{ request.POST.email }}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required>
+        {% if form.username.errors %}<div class="form-error">{{ form.username.errors|join:", " }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password1" class="form-control" placeholder="At least 8 characters" required>
+        {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" name="password2" class="form-control" placeholder="Repeat password" required>
+        {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-top:4px;">
+        Create Account →
+      </button>
+      <p style="font-size:10px;color:var(--text-light);text-align:center;margin-top:12px;line-height:1.6;">
+        By creating an account you agree to our Terms of Service and Privacy Policy.
+      </p>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'signin' %}">Sign in →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

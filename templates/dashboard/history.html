@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Assessment History{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="page-breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Assessment History</div>
+  <div class="page-header">
+    <h1>My Assessment Reports</h1>
+    <p>A complete log of every climate risk assessment you have run.</p>
+  </div>
+
+  {% if page_obj.object_list %}
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>State</th>
+          <th>Property Type</th>
+          <th>Grade</th>
+          <th>Composite Score</th>
+          <th>Flood</th>
+          <th>Rainfall</th>
+          <th>Heat</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in page_obj %}
+        <tr>
+          <td><strong>{{ r.state }}</strong></td>
+          <td style="color:var(--text-light)">{{ r.property_type }}</td>
+          <td><span class="badge badge-{{ r.grade|lower }}">{{ r.grade }} — {{ r.grade_label }}</span></td>
+          <td><strong>{{ r.composite_score }}</strong>/100</td>
+          <td>{{ r.flood_score }}</td>
+          <td>{{ r.rainfall_score }}</td>
+          <td>{{ r.heat_score }}</td>
+          <td style="color:var(--text-light);white-space:nowrap">{{ r.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">‹</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="current">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">›</a>
+    {% endif %}
+  </div>
+
+  {% else %}
+  <div style="text-align:center;padding:80px 20px;opacity:0.5;">
+    <div style="font-size:48px;margin-bottom:16px;">🌍</div>
+    <p style="font-size:15px;color:var(--text-light);">No assessments yet. <a href="{% url 'dashboard' %}" style="color:var(--orange);">Run your first one →</a></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

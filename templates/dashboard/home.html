@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_style %}
+.dash-hero{background:var(--dark);padding:36px 40px;margin-bottom:0;}
+.dash-hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.dash-welcome{color:white;}
+.dash-welcome h1{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;margin-bottom:4px;}
+.dash-welcome h1 span{color:var(--orange-bright);}
+.dash-welcome p{font-size:13px;color:rgba(255,255,255,0.45);}
+.grade-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(200,120,10,0.2);border:1px solid rgba(200,120,10,0.4);color:var(--yellow);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:7px 16px;border-radius:100px;}
+.pulse{width:5px;height:5px;background:var(--yellow);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.assess-card{background:white;border:1.5px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 4px 32px var(--shadow);}
+.assess-card-header{background:var(--dark);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+.assess-card-header-title{font-size:12px;color:rgba(255,255,255,0.5);}
+.assess-form-body{padding:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:6px;letter-spacing:0.3px;text-transform:uppercase;}
+.field input,.field select,.field textarea{width:100%;padding:12px 15px;font-size:14px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);color:var(--text);font-family:inherit;outline:none;transition:border-color 0.2s,background 0.2s;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);background:white;}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-light);}
+.coords-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.geo-btn{width:100%;background:var(--cream);border:1.5px dashed var(--border);color:var(--orange);font-size:13px;font-weight:600;padding:11px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all 0.2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.geo-btn:hover{background:var(--orange-glow);border-color:var(--orange);}
+.run-btn{width:100%;background:var(--orange);color:white;border:none;padding:14px;font-size:15px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.25s;box-shadow:0 4px 16px rgba(200,120,10,0.3);margin-top:4px;letter-spacing:0.3px;}
+.run-btn:hover{background:var(--orange-bright);transform:translateY(-1px);}
+.run-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.results-box{background:white;border:1.5px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 4px 32px var(--shadow);min-height:400px;display:flex;flex-direction:column;}
+.results-header{background:var(--dark);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;}
+.results-header-title{font-size:12px;color:rgba(255,255,255,0.5);}
+.results-live{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--yellow);font-weight:600;letter-spacing:1px;}
+.live-dot{width:5px;height:5px;background:var(--yellow);border-radius:50%;animation:blink 1.5s infinite;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:48px 32px;text-align:center;opacity:0.5;}
+.empty-icon{font-size:40px;margin-bottom:16px;}
+.empty-text{font-size:14px;color:var(--text-light);line-height:1.6;}
+.loading-state{display:none;padding:32px;flex:1;}
+.loading-ring{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 20px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-steps{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.loading-steps li{font-size:12px;color:var(--text-light);display:flex;align-items:center;gap:10px;transition:color 0.3s;}
+.loading-steps li::before{content:'○';font-size:10px;width:14px;text-align:center;flex-shrink:0;}
+.loading-steps li.active{color:var(--orange);}
+.loading-steps li.active::before{content:'◉';}
+.loading-steps li.done{color:#22A06B;}
+.loading-steps li.done::before{content:'●';}
+.result-content{display:none;padding:24px;flex:1;flex-direction:column;gap:16px;}
+.result-content.show{display:flex;}
+.grade-row{display:flex;align-items:center;gap:16px;padding:18px;background:var(--warm);border-radius:12px;border:1.5px solid var(--border-soft);}
+.grade-big{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:700;line-height:1;transition:color 0.3s;}
+.grade-info-label{font-size:10px;color:var(--text-light);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.grade-info-name{font-size:15px;font-weight:700;}
+.grade-info-score{font-size:12px;color:var(--text-light);margin-top:4px;}
+.bars{display:flex;flex-direction:column;gap:10px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{font-size:11px;color:var(--text-light);font-weight:500;width:90px;flex-shrink:0;}
+.bar-track{flex:1;height:6px;background:var(--border-soft);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;width:0%;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+.bar-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;white-space:nowrap;}
+.result-text-box{background:var(--warm);border-radius:10px;padding:16px 18px;}
+.result-text-label{font-size:10px;font-weight:700;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.result-text-body{font-size:13px;color:var(--text-mid);line-height:1.65;}
+.cost-box{background:var(--dark);border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.cost-label{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;}
+.cost-value{font-size:18px;font-weight:700;color:var(--yellow);}
+.cost-note{font-size:11px;color:rgba(255,255,255,0.3);text-align:right;}
+.disclaimer-mini{font-size:10px;color:var(--text-light);line-height:1.55;padding:10px 14px;background:rgba(200,120,10,0.04);border:1px solid rgba(200,120,10,0.12);border-radius:8px;}
+.assess-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.email-note{background:rgba(34,160,107,0.06);border:1px solid rgba(34,160,107,0.2);border-radius:8px;padding:8px 12px;font-size:11px;color:#1A7A52;margin-top:8px;display:none;}
+@media(max-width:900px){.assess-grid{grid-template-columns:1fr;}}
+{% endblock %}
+
+{% block content %}
+<div class="dash-hero">
+  <div class="dash-hero-inner">
+    <div class="dash-welcome">
+      <h1>Good day, <span>{{ user.first_name|default:user.username }}</span></h1>
+      <p>Run a climate risk assessment on any Nigerian property.</p>
+    </div>
+    <div>
+      <span class="grade-pill"><span class="pulse"></span> Live Assessment Engine</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap" style="padding-top:32px;">
+  {% if total > 0 %}
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <p style="font-size:13px;color:var(--text-light);">You have run <strong>{{ total }}</strong> assessment{{ total|pluralize }} so far.</p>
+    <a href="{% url 'assessment_history' %}" class="btn btn-outline btn-sm">View All Reports →</a>
+  </div>
+  {% endif %}
+
+  <form style="display:none;">{% csrf_token %}</form>
+
+  <div class="assess-grid">
+    <!-- FORM -->
+    <div class="assess-card">
+      <div class="assess-card-header">
+        <span class="assess-card-header-title">PROPERTY DETAILS</span>
+        <div class="results-live"><span class="live-dot"></span> LIVE</div>
+      </div>
+      <div class="assess-form-body">
+        <div class="field">
+          <label>State</label>
+          <select id="state">
+            <option value="">Select state</option>
+            {% for s in states %}
+            <option>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Property Type</label>
+          <select id="ptype">
+            <option value="">Select type</option>
+            {% for property_type in property_types %}
+            <option value="{{ property_type }}">{{ property_type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Coordinates</label>
+          <button class="geo-btn" type="button" id="geoBtn" onclick="detectLocation()">📍 Detect My Location Automatically</button>
+          <div class="coords-row">
+            <input type="number" id="lat" placeholder="Latitude" step="0.000001">
+            <input type="number" id="lng" placeholder="Longitude" step="0.000001">
+          </div>
+        </div>
+        <div class="field">
+          <label>Notes <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea id="notes" rows="2" placeholder="Any additional context…"></textarea>
+        </div>
+        <button class="run-btn" id="runBtn" onclick="runAssessment()">Run Climate Risk Assessment →</button>
+        <div class="email-note" id="emailNote">📧 Your report will also be emailed to {{ user.email }}</div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-box" id="resultsBox">
+      <div class="results-header">
+        <span class="results-header-title">CLIMATE RISK REPORT</span>
+        <div class="results-live"><span class="live-dot"></span> LIVE</div>
+      </div>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🌍</div>
+        <div class="empty-text">Submit property details to generate your climate risk report.</div>
+      </div>
+      <div class="loading-state" id="loadingState">
+        <div class="loading-ring"></div>
+        <ul class="loading-steps">
+          <li id="s1">Fetching elevation & terrain data</li>
+          <li id="s2">Analysing historical rainfall patterns</li>
+          <li id="s3">Checking flood history records</li>
+          <li id="s4">Processing coastal exposure data</li>
+          <li id="s5">Running CMIP6 climate projections</li>
+          <li id="s6">Generating investment grade</li>
+        </ul>
+      </div>
+      <div class="result-content" id="resultContent">
+        <div class="grade-row">
+          <div class="grade-big" id="gradeLetter">—</div>
+          <div>
+            <div class="grade-info-label">Climate Grade</div>
+            <div class="grade-info-name" id="gradeName">—</div>
+            <div class="grade-info-score" id="gradeScore"></div>
+          </div>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><span class="bar-label">Flood Risk</span><div class="bar-track"><div class="bar-fill" id="bFlood"></div></div><span class="bar-tag" id="tFlood"></span></div>
+          <div class="bar-row"><span class="bar-label">Rainfall</span><div class="bar-track"><div class="bar-fill" id="bRain"></div></div><span class="bar-tag" id="tRain"></span></div>
+          <div class="bar-row"><span class="bar-label">Heat Stress</span><div class="bar-track"><div class="bar-fill" id="bHeat"></div></div><span class="bar-tag" id="tHeat"></span></div>
+          <div class="bar-row"><span class="bar-label">Coastal</span><div class="bar-track"><div class="bar-fill" id="bCoast"></div></div><span class="bar-tag" id="tCoast"></span></div>
+        </div>
+        <div class="result-text-box">
+          <div class="result-text-label">Exposure Summary</div>
+          <div class="result-text-body" id="exposureText"></div>
+        </div>
+        <div class="cost-box">
+          <div><div class="cost-label">Estimated Adaptation Cost</div><div class="cost-value" id="costVal">—</div></div>
+          <div class="cost-note" id="costNote"></div>
+        </div>
+        <div class="result-text-box">
+          <div class="result-text-label">Recommendations</div>
+          <div class="result-text-body" id="recoText"></div>
+        </div>
+        <div class="disclaimer-mini" id="dataSourcesBox" style="display:none;"></div>
+        <div class="disclaimer-mini">This is a modelled exposure scoring tool, not engineering certification or legal advice. Always conduct professional surveys before any property transaction.</div>
+      </div>
+    </div>
+  </div>
+
+  {% if recent %}
+  <div style="margin-top:40px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:16px;font-weight:700;">Recent Assessments</h3>
+      <a href="{% url 'assessment_history' %}" class="btn btn-outline btn-sm">View all</a>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead><tr><th>Location</th><th>Type</th><th>Grade</th><th>Score</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for r in recent %}
+        <tr>
+          <td>{{ r.state }}</td>
+          <td style="color:var(--text-light)">{{ r.property_type|truncatechars:30 }}</td>
+          <td><span class="badge badge-{{ r.grade|lower }}">{{ r.grade }} — {{ r.grade_label }}</span></td>
+          <td>{{ r.composite_score }}/100</td>
+          <td style="color:var(--text-light)">{{ r.created_at|date:"M d, Y" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const nav = document.getElementById('nav');
+function detectLocation() {
+  const btn = document.getElementById('geoBtn');
+  btn.textContent = '⏳ Detecting...';
+  btn.disabled = true;
+  navigator.geolocation?.getCurrentPosition(
+    pos => {
+      document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('lng').value = pos.coords.longitude.toFixed(6);
+      btn.textContent = '✓ Location Acquired';
+      btn.disabled = false;
+    },
+    () => { btn.textContent = '📍 Detect My Location Automatically'; btn.disabled = false; }
+  );
+}
+
+async function runAssessment() {
+  const lat = parseFloat(document.getElementById('lat').value);
+  const lng = parseFloat(document.getElementById('lng').value);
+  const state = document.getElementById('state').value;
+  const ptype = document.getElementById('ptype').value;
+  const notes = document.getElementById('notes').value;
+
+  if (!lat || !lng || !state || !ptype) { alert('Please fill in coordinates, state, and property type.'); return; }
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultContent').classList.remove('show');
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('dataSourcesBox').style.display = 'none';
+  document.getElementById('runBtn').disabled = true;
+
+  const steps = ['s1','s2','s3','s4','s5','s6'];
+  for (let i = 0; i < steps.length; i++) {
+    if (i > 0) document.getElementById(steps[i-1]).className = 'done';
+    document.getElementById(steps[i]).className = 'active';
+    await sleep(600 + Math.random() * 400);
+  }
+  document.getElementById(steps[steps.length-1]).className = 'done';
+
+  try {
+    const res = await fetch('/api/assess/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+      body: JSON.stringify({lat, lng, state, property_type: ptype, notes})
+    });
+    if (!res.ok) throw new Error('Assessment failed');
+    const r = await res.json();
+    document.getElementById('loadingState').style.display = 'none';
+    renderResult(r);
+    document.getElementById('emailNote').style.display = 'block';
+  } catch(e) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'flex';
+    document.getElementById('runBtn').disabled = false;
+    alert('Assessment failed. Please try again.');
+  }
+}
+
+function renderResult(r) {
+  const colors = {A:'#22A06B', B:'#D4A820', C:'#C8780A', D:'#DC3C3C'};
+  const c = colors[r.grade] || '#C8780A';
+  document.getElementById('gradeLetter').textContent = r.grade;
+  document.getElementById('gradeLetter').style.color = c;
+  document.getElementById('gradeName').textContent = r.gradeLabel;
+  document.getElementById('gradeName').style.color = c;
+  document.getElementById('gradeScore').textContent = 'Composite Score: ' + r.compositeScore + '/100';
+  document.getElementById('exposureText').textContent = r.exposureSummary;
+  document.getElementById('costVal').textContent = r.costLow + ' – ' + r.costHigh;
+  document.getElementById('costNote').textContent = 'Modelled estimate';
+  document.getElementById('recoText').textContent = r.recommendations;
+  setBar('bFlood','tFlood', r.flood, c);
+  setBar('bRain','tRain', r.rainfall, c);
+  setBar('bHeat','tHeat', r.heat, c);
+  setBar('bCoast','tCoast', r.coastal, c);
+  document.getElementById('resultContent').classList.add('show');
+  document.getElementById('runBtn').disabled = false;
+  if (r.dataSources && r.dataSources.length) {
+    const box = document.getElementById('dataSourcesBox');
+    box.textContent = 'Data sources: ' + r.dataSources.map(s => s.name).join(' · ') +
+      ' · Scenario: ' + (r.projectionScenario || 'SSP2-4.5') +
+      ' · Retrieved: ' + (r.dataRetrievedAt || 'N/A');
+    box.style.display = 'block';
+  }
+  setTimeout(() => {
+    animBar('bFlood', r.flood); animBar('bRain', r.rainfall);
+    animBar('bHeat', r.heat); animBar('bCoast', r.coastal);
+  }, 80);
+}
+
+function setBar(barId, tagId, val, color) {
+  const label = val < 30 ? 'LOW' : val < 60 ? 'MODERATE' : 'HIGH';
+  const bg = val < 30 ? 'rgba(34,160,107,0.1)' : val < 60 ? 'rgba(213,168,32,0.15)' : 'rgba(200,120,10,0.1)';
+  const tc = val < 30 ? '#22A06B' : val < 60 ? '#9A7800' : color;
+  document.getElementById(barId).style.background = color;
+  document.getElementById(tagId).textContent = label;
+  document.getElementById(tagId).style.background = bg;
+  document.getElementById(tagId).style.color = tc;
+}
+function animBar(id, val) { document.getElementById(id).style.width = val + '%'; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function getCookie(name) {
+  const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return v ? v[2] : null;
+}
+</script>
+{% endblock %}
