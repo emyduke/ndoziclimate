@@ -176,11 +176,11 @@ footer{background:#0E0804;border-top:1px solid rgba(255,255,255,0.06);padding:24
       {% else %}
         <a class="btn btn-solid" href="{% url 'signup' %}">Sign Up Free</a>
         <a class="btn btn-outline" href="{% url 'signin' %}">Sign In</a>
-        <a class="btn btn-outline" href="{% url 'password_reset' %}">Reset Password</a>
+        <!-- <a class="btn btn-outline" href="{% url 'password_reset' %}">Reset Password</a> -->
       {% endif %}
     </div>
     {% if not user.is_authenticated %}
-    <p class="auth-note">Need help accessing your account? <a href="{% url 'password_reset' %}" style="color:var(--yellow);text-decoration:none;">Reset password</a>.</p>
+    <!-- <p class="auth-note">Need help accessing your account? <a href="{% url 'password_reset' %}" style="color:var(--yellow);text-decoration:none;">Reset password</a>.</p> -->
     {% endif %}
   </div>
 </section>

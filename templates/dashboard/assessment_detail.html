@@ -62,6 +62,14 @@
 .sources-card h4{font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
 .source-pills{display:flex;flex-wrap:wrap;gap:8px;}
 .source-pill{font-size:11px;font-weight:500;color:var(--text-mid);background:white;border:1px solid var(--border);border-radius:100px;padding:4px 12px;}
+.source-list{display:flex;flex-direction:column;gap:10px;}
+.source-item{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.source-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.source-name{font-size:13px;font-weight:700;color:var(--text);}
+.source-date{font-size:11px;color:var(--text-light);}
+.source-link{font-size:11px;font-weight:600;color:var(--orange);text-decoration:none;}
+.source-link:hover{text-decoration:underline;}
+.source-notes{font-size:11px;color:var(--text-mid);line-height:1.6;margin-top:6px;}
 
 /* Notes */
 .notes-card{background:rgba(200,120,10,0.04);border:1px solid rgba(200,120,10,0.15);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--text-mid);line-height:1.7;}
@@ -221,9 +229,22 @@
   {% if result.data_sources_used %}
   <div class="sources-card">
     <h4>Data Sources Used</h4>
-    <div class="source-pills">
+    <div class="source-list">
       {% for source in result.data_sources_used %}
+      {% if source.name or source.url or source.retrieval_date or source.notes %}
+      <div class="source-item">
+        <div class="source-item-top">
+          <div class="source-name">{{ source.name|default:"Unknown source" }}</div>
+          {% if source.retrieval_date %}<div class="source-date">Retrieved: {{ source.retrieval_date }}</div>{% endif %}
+        </div>
+        {% if source.url %}
+        <a class="source-link" href="{{ source.url }}" target="_blank" rel="noopener">View source</a>
+        {% endif %}
+        {% if source.notes %}<div class="source-notes">{{ source.notes }}</div>{% endif %}
+      </div>
+      {% else %}
       <span class="source-pill">{{ source }}</span>
+      {% endif %}
       {% endfor %}
     </div>
   </div>

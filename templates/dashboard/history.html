@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Assessment History{% endblock %}
 
+{% block extra_style %}
+.history-row{cursor:pointer;}
+.history-row:hover{background:var(--cream);}
+.history-link{font-size:12px;font-weight:700;color:var(--orange);text-decoration:none;}
+.history-link:hover{text-decoration:underline;}
+{% endblock %}
+
 {% block content %}
 <div class="page-wrap">
   <div class="page-breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Assessment History</div>
@@ -22,11 +29,12 @@
           <th>Rainfall</th>
           <th>Heat</th>
           <th>Date</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         {% for r in page_obj %}
-        <tr>
+        <tr class="history-row" onclick="window.location='{% url 'assessment_detail' r.pk %}'">
           <td><strong>{{ r.state }}</strong></td>
           <td style="color:var(--text-light)">{{ r.property_type }}</td>
           <td><span class="badge badge-{{ r.grade|lower }}">{{ r.grade }} — {{ r.grade_label }}</span></td>
@@ -35,6 +43,9 @@
           <td>{{ r.rainfall_score }}</td>
           <td>{{ r.heat_score }}</td>
           <td style="color:var(--text-light);white-space:nowrap">{{ r.created_at|date:"M d, Y H:i" }}</td>
+          <td>
+            <a class="history-link" href="{% url 'assessment_detail' r.pk %}" onclick="event.stopPropagation();">View report →</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
